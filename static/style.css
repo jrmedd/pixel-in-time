@@ -1,0 +1,21 @@
+@font-face {
+  src: url(Eleven.ttf);
+  font-family: 'Eleven';
+}
+
+body {
+  background: #000000;
+  color: #ffffff;
+  font-family: 'Eleven';
+  margin: 0;
+}
+
+#gameArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: wrap;
+  height: 100%;
+  height: 100vh;
+}
