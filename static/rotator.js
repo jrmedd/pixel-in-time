@@ -8,7 +8,11 @@ class Rotator {
     }
 
     rotate() {
-        this.rotations +=1 ;
+        if (this.rotations < this.maxRotations) {
+            this.rotations +=1 ;
+            return true;
+        }
+        return false;
     }
     finished() {
         return this.rotations >= this.maxRotations;
@@ -24,4 +28,5 @@ class Rotator {
         this.startedAt = null;
         this.finishedAt = null;
     }
+    
 }
