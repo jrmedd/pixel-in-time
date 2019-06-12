@@ -1,10 +1,14 @@
 class Rotator {
     
-    constructor(maxRotations) {
+    constructor(maxRotations, playerLabel) {
         this.rotations = 0;
         this.maxRotations = maxRotations;
+        this.playerLabel = playerLabel;
         this.startedAt;
         this.finishedAt;
+        this.timeTaken;
+        this.judged = false;
+        this.opinion;
     }
 
     rotate() {
@@ -17,16 +21,14 @@ class Rotator {
     finished() {
         return this.rotations >= this.maxRotations;
     }
-    timeTaken() {
-        if (this.startedAt && this.finishedAt) {
-            return (this.finishedAt.getTime() - this.startedAt.getTime())/1000;
-        }
-    }
 
     reset() {
         this.rotations = 0;
         this.startedAt = null;
         this.finishedAt = null;
+        this.timeTaken = null;
+        this.judged = false;
+        this.opion = null;
     }
     
 }

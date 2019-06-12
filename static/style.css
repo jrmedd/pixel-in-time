@@ -12,10 +12,48 @@ body {
 
 #gameArea {
   display: flex;
-  align-items: center;
   justify-content: center;
   align-content: center;
   flex-wrap: wrap;
   height: 100%;
   height: 100vh;
+}
+
+#gameStatus {
+    text-align: center;
+}
+
+@-webkit-keyframes fade {
+  0% {opacity:1;}
+  100% {opacity:0;}
+}
+@keyframes fade {
+  0% {opacity:1;}
+  100% {opacity:0;}
+}
+
+.fadeOut {
+  -moz-animation   : fade .5s ease;
+  -webkit-animation: fade .5s ease;
+  animation        : fade .5s ease;
+  animation-fill-mode: forwards;
+}
+
+.fadeIn {
+    -moz-animation: fade .5s ease;
+    -webkit-animation: fade .5s ease;
+    animation: fade .5s ease;
+    animation-fill-mode: backwards;
+}
+
+.standard {
+  color: #ffffff;
+}
+
+.fail {
+  color: #CB0000;
+}
+
+.success {
+  color: #9EE22E
 }
