@@ -2,20 +2,23 @@
 
 let gameActive = false;
 let judgingMode = false;
+let countingDown = false;
 let judgingPlayer;
 let gameStarted;
 let winner;
 
 // game parameters
 
-const targetRotations = 10;
-const numberOfPlayers = 2;
+const targetRotations = 100;
+const numberOfPlayers = 1;
 
 
 // initialise player arrays (for players and keypresses)
 
 const players = new Array(numberOfPlayers);
 const playerKeycodes = new Array(numberOfPlayers);
+
+const countdown = new Countdown(3);
 
 //configure game audio
 const introPip = new simpleSynth(360, 1, 0); // intro pip voice
@@ -34,7 +37,7 @@ for (let i = 0; i < numberOfPlayers; i++) {
 
 const newGame = () => {
     console.log('Starting new game...')
-    changeText("gameStatus", "Stitch those pockets!");
+    changeText("gameStatus", "Go!");
     gameStarted = new Date(); //get the start of the time
     players.map((player) => player.startedAt = gameStarted); //set the start times for every player
     gameActive = true; //start 'listening' to any rotations
@@ -43,7 +46,7 @@ const newGame = () => {
 
 const gameOver = () => {
     console.log('Game over. Press "N" to start a new game...');
-    changeText("gameStatus", "<p>Game over. Press button to start...</p>");
+    fadeText("gameStatus", "<p>Game over. Press button to start...</p>");
     players.map((player)=> player.reset()); //reset the internal rotation and time values of each player
     voices.map((voice)=>{ voice.carrier.frequency.value = voice.carrierFreq }); //set the voices back to their intitial carrier frequencies
     gameActive = false; //game is no longer active, don't 'listen' for rotations
@@ -52,8 +55,25 @@ const gameOver = () => {
 }
 
 document.onkeypress = (e) => {
-    if (e.code == 'KeyN' && !gameActive) { //game not active, N key pressed
-        newGame(); //start everything!
+    if (e.code == 'KeyN' && !gameActive && !countingDown) { //game not active, N key pressed
+        countingDown = true;
+        introPip.simpleEnv(audioCtx.currentTime, 360, 10, 75);
+        changeText("gameStatus", countdown.count);
+        counter = setInterval(()=>{
+            done = countdown.tick();
+            if (!done) {
+                changeText("gameStatus", countdown.count);
+                introPip.simpleEnv(audioCtx.currentTime, 360, 10, 75);
+            }
+            else {
+                clearInterval(counter);
+                countingDown = false;
+                countdown.reset();
+                introPip.simpleEnv(audioCtx.currentTime, 720, 10, 200);
+                newGame(); //start everything!
+            }
+    
+        }, 1000);
     }
     if (gameActive && !judgingMode) {
         let playerPressed = playerKeycodes.indexOf(e.code); //check if the key pressed is a plyer key
@@ -63,6 +83,8 @@ document.onkeypress = (e) => {
                 voices[playerPressed].simpleEnv(audioCtx.currentTime, voices[playerPressed].carrier.frequency.value+=frequencyIncrease, 10, 50);
             }
             if (players[playerPressed].finished() && !players[playerPressed].finishedAt) { //the player has finished and doesn't have a finishing time  
+                voices[playerPressed].simpleEnv(audioCtx.currentTime, 100, 10, 75);
+                voices[playerPressed].simpleEnv(audioCtx.currentTime+.125, 600, 10, 200);
                 players[playerPressed].finishedAt = new Date(); //set the finish time
                 players[playerPressed].timeTaken = (players[playerPressed].finishedAt.getTime() - players[playerPressed].startedAt.getTime()) / 1000;
             }
@@ -70,7 +92,7 @@ document.onkeypress = (e) => {
         if (players.every((player) => player.finished())) { // if every player has finished
             judgingMode = true; //start juding
             console.log("Going to judging mode");
-            changeText("gameStatus", "<p>Judging...</p>");
+            fadeText("gameStatus", "<p>Judging...</p>");
         }
     }
     if (gameActive && judgingMode) {
@@ -88,7 +110,7 @@ document.onkeypress = (e) => {
             }
         }
         else {
-            changeText("gameStatus", "<p>The results are in...</p>");
+            fadeText("gameStatus", "<p>The results are in...</p>");
             let contenders = players.filter(player => player.opinion);
             if (contenders.length > 0) {
                 winner = contenders.hasMin('timeTaken');
@@ -104,7 +126,7 @@ document.onkeypress = (e) => {
                 scoreTable += `<li>${player.playerLabel} – ${player.timeTaken.toFixed(2)} seconds – ${player.opinion ? "Pass" : "Fail" }</li>`;
             });
             scoreTable += '</ol>'
-            changeText("gameStatus", scoreTable);
+            fadeText("gameStatus", scoreTable);
             setTimeout(()=>gameOver(), 10000);
             //gameOver(); //reset everything 
         }
