@@ -9,7 +9,7 @@ let winner;
 
 // game parameters
 
-const targetRotations = 100;
+const targetRotations = 5;
 const numberOfPlayers = 1;
 
 
@@ -116,19 +116,44 @@ document.onkeypress = (e) => {
                 winner = contenders.hasMin('timeTaken');
             }
         }
-        if (e.code == 'KeyN') { //finish judging
+        if (e.code == 'KeyN' && winner) { //finish judging
             let scoreTable = '<h3>Scores</h3>';
             if (winner) {
                 scoreTable += `<h4>Winner: ${winner.playerLabel}</h4><ol>`;
             }
             let times = players.concat().sort((a, b)=> a.timeTaken - b.timeTaken);
             times.forEach((player, index) => {
+                let username = prompt("Who got this score?")
+                postScore(username, player.timeTaken.toFixed(2), player.opinion)
                 scoreTable += `<li>${player.playerLabel} – ${player.timeTaken.toFixed(2)} seconds – ${player.opinion ? "Pass" : "Fail" }</li>`;
             });
             scoreTable += '</ol>'
             fadeText("gameStatus", scoreTable);
+            judgingMode = false;
             setTimeout(()=>gameOver(), 10000);
             //gameOver(); //reset everything 
         }
     }
+}
+
+function postScore(username, score_entry, judgement) {
+    let url = "http://127.0.0.1:5000/entry"
+    //let url = "https://pocketracerscores.xyz/entry";
+    fetch(url, {
+        method: "POST",
+        mode: 'cors',
+        cache: "no-cache",
+        credentials: "omit",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": "DigiLab"
+        },
+        redirect: "follow",
+        referrer: "no-referrer",
+        body: JSON.stringify({
+            "username": username,
+            "score": score_entry,
+            "judgement": judgement
+        })
+    });
 }

@@ -1,9 +1,50 @@
-from flask import Flask, render_template
+import os
+import datetime
+from pymongo import MongoClient
+from flask import Flask, jsonify, render_template, request
+from flask_cors import CORS
+
 APP = Flask(__name__)
+
+
+MONGO_URL = os.environ.get('MONGO_URL')
+
+CLIENT = MongoClient(MONGO_URL)
+DB = CLIENT['prscores']
+SCORES = DB['scores']
+KEYS = DB['keys']
+
+APP = Flask(__name__)
+CORS(APP)
+
+APP.secret_key = os.environ.get('SECRET_KEY')
+
 
 @APP.route('/')
 def index():
     return render_template("index.html")
-    
+
+@APP.route('/entry', methods=["POST"])
+def entry():
+    key_check = KEYS.find_one({'key': request.headers.get('X-Api-Key')})
+    if key_check and key_check.get('valid'):
+        new_entry = {'timestamp': datetime.datetime.now()}
+        new_entry.update({'username':request.get_json().get('username')})
+        new_entry.update({'score' : request.get_json().get('score')})
+        new_entry.update({'judge' : request.get_json().get('judgement')})
+        SCORES.insert_one(new_entry)
+        return jsonify(entry={'success': True})
+    else:
+        return jsonify(entry={'success': False})
+
+@APP.route('/high_scores')
+def high_scores():
+        high_scores_pass = list(SCORES.find(
+            {'judge':True}, {'_id': 0}).sort('score', 1).limit(5))
+        high_scores_fail = list(SCORES.find(
+            {'judge':False}, {'_id': 0}).sort('score', 1).limit(5))
+        return render_template("highscore.html", high_scores_pass=high_scores_pass, high_scores_fail=high_scores_fail)
+
+
 if __name__ == '__main__':
     APP.run(debug=True, host="0.0.0.0")
