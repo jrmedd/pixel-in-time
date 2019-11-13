@@ -1,3 +1,5 @@
+let scoreBoardKey = prompt("What's the scoreboard key?")
+
 //game modes
 
 let gameActive = false;
@@ -9,7 +11,7 @@ let winner;
 
 // game parameters
 
-const targetRotations = 5;
+const targetRotations = 100;
 const numberOfPlayers = 1;
 
 
@@ -137,8 +139,7 @@ document.onkeypress = (e) => {
 }
 
 function postScore(username, score_entry, judgement) {
-    let url = "http://127.0.0.1:5000/entry"
-    //let url = "https://pocketracerscores.xyz/entry";
+    let url = "https://pocket-racer.xyz/entry"
     fetch(url, {
         method: "POST",
         mode: 'cors',
@@ -146,7 +147,7 @@ function postScore(username, score_entry, judgement) {
         credentials: "omit",
         headers: {
             "Content-Type": "application/json",
-            "X-Api-Key": "DigiLab"
+            "X-Api-Key": scoreBoardKey
         },
         redirect: "follow",
         referrer: "no-referrer",
