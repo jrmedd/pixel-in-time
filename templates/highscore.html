@@ -46,7 +46,7 @@
     <script>
         const scoreTables = { 'good-pocket': 'high_scores_pass', 'bad-pocket': 'high_scores_fail' };
         const getScore = async () => {
-            let scoreRequest = await fetch("http://127.0.0.1:5000/high_scores?json=1")
+            let scoreRequest = await fetch("https://pocket-racer.xyz/high_scores?json=1")
             let scores = await scoreRequest.json();
             console.log(scores);
             for (let classification in scoreTables) {
