@@ -2,7 +2,7 @@ import os
 import datetime
 from pymongo import MongoClient
 from flask import Flask, jsonify, render_template, request
-from flask_cors import CORS
+from flask_socketio import SocketIO
 
 APP = Flask(__name__)
 
@@ -15,7 +15,7 @@ SCORES = DB['scores']
 KEYS = DB['keys']
 
 APP = Flask(__name__)
-CORS(APP)
+SOCKETIO = SocketIO(APP)
 
 APP.secret_key = os.environ.get('SECRET_KEY')
 
@@ -35,17 +35,27 @@ def entry():
         new_entry.update({'score' : request.get_json().get('score')})
         new_entry.update({'judge' : request.get_json().get('judgement')})
         SCORES.insert_one(new_entry)
+        print(high_scores())
+        SOCKETIO.emit('new-scores', high_scores(), namespace='/scores')
+        print("Emitted")
         return jsonify(entry={'success': True})
     else:
         return jsonify(entry={'success': False})
 
 @APP.route('/high_scores')
-def high_scores():
+def high_scores(table=None):
         high_scores_pass = list(SCORES.find(
             {'judge':True}, {'_id': 0}).sort('score', 1).limit(5))
         high_scores_fail = list(SCORES.find(
             {'judge':False}, {'_id': 0}).sort('score', 1).limit(5))
-        return render_template("highscore.html", high_scores_pass=high_scores_pass, high_scores_fail=high_scores_fail)
+        if request.args.get('table'):
+            return render_template("highscore.html", high_scores_pass=high_scores_pass, high_scores_fail=high_scores_fail)
+        elif request.args.get('json'):
+            return jsonify(high_scores_pass=high_scores_pass, high_scores_fail=high_scores_fail)
+        else:
+            pass_score_times = [score.pop('timestamp') for score in high_scores_pass]
+            fail_score_times = [score.pop('timestamp') for score in high_scores_fail]
+            return {'high_scores_pass':high_scores_pass, 'high_scores_fail':high_scores_fail}
 
 
 @APP.route('/.well-known/acme-challenge/<challenge_string>')
@@ -56,4 +66,4 @@ def acme_challenge(challenge_string):
         return "Doesn't match"
 
 if __name__ == '__main__':
-    APP.run(debug=True, host="0.0.0.0")
+    SOCKETIO.run(APP, host="0.0.0.0", debug=True)

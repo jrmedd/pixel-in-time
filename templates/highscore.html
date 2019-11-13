@@ -15,7 +15,7 @@
                 <th class="player">Player</th>
                 <th class="score">Time</th>
             </thead>
-            <tbody>
+            <tbody id="good-pocket-scores">
         {% for score in high_scores_pass %}
             <tr>
                 <td class="player">{{ score['username'] }}</td>
@@ -32,7 +32,7 @@
                 <th class="player">Player</th>
                 <th class="score">Time</th>
             </thead>
-            <tbody>
+            <tbody id="bad-pocket-scores">
             {% for score in high_scores_fail %}
             <tr>
                 <td class="player">{{ score['username'] }}</td>
@@ -42,5 +42,34 @@
             </tbody>
         </table>
     </div>
+    <script src="{{url_for('static', filename='socket.io.min.js')}}"></script>
+    <script>
+        const scoreTables = { 'good-pocket': 'high_scores_pass', 'bad-pocket': 'high_scores_fail' };
+        let incomingScores = io.connect(location.origin + '/scores');
+        let sessionid
+        incomingScores.on('connect', function () {
+            sessionid = this.id;
+        });
+        let scores;
+        incomingScores.on('new-scores', (data) => {
+            let scores = data;
+            for (let classification in scoreTables) {
+                let scoreTableBody = document.getElementById(`${classification}-scores`);
+                scoreTableBody.innerHTML = "";
+                scores[scoreTables[classification]].forEach(v => {
+                    let newScore = document.createElement('tr');
+                    let playerCell = document.createElement('td');
+                    playerCell.classList.add('player');
+                    playerCell.textContent = v['username'];
+                    let scoreCell = document.createElement('td');
+                    scoreCell.classList.add('score');
+                    scoreCell.textContent = v['score'];
+                    newScore.appendChild(playerCell);
+                    newScore.appendChild(scoreCell);
+                    scoreTableBody.appendChild(newScore)
+                });
+            }
+        });
+    </script>
 </body>
 </html>

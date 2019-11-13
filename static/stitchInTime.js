@@ -118,7 +118,7 @@ document.onkeypress = (e) => {
                 winner = contenders.hasMin('timeTaken');
             }
         }
-        if (e.code == 'KeyN' && winner) { //finish judging
+        if (e.code == 'KeyN' && judgingMode) { //finish judging
             let scoreTable = '<h3>Scores</h3>';
             if (winner) {
                 scoreTable += `<h4>Winner: ${winner.playerLabel}</h4><ol>`;
@@ -129,9 +129,9 @@ document.onkeypress = (e) => {
                 postScore(username, player.timeTaken.toFixed(2), player.opinion)
                 scoreTable += `<li>${player.playerLabel} – ${player.timeTaken.toFixed(2)} seconds – ${player.opinion ? "Pass" : "Fail" }</li>`;
             });
+            judgingMode = false;
             scoreTable += '</ol>'
             fadeText("gameStatus", scoreTable);
-            judgingMode = false;
             setTimeout(()=>gameOver(), 10000);
             //gameOver(); //reset everything 
         }
