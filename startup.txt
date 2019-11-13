@@ -1,1 +1,1 @@
-gunicorn -k gevent --bind="0.0.0.0" -w 1 web_app:APP
+gunicorn web_app:APP --bind="0.0.0.0" --timeout 600 --log-file="gunicorn-errors.log"
