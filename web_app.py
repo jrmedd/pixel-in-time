@@ -15,7 +15,7 @@ SCORES = DB['scores']
 KEYS = DB['keys']
 
 APP = Flask(__name__)
-#SOCKETIO = SocketIO(APP)
+SOCKETIO = SocketIO(APP)
 
 APP.secret_key = os.environ.get('SECRET_KEY')
 
@@ -36,7 +36,7 @@ def entry():
         new_entry.update({'judge' : request.get_json().get('judgement')})
         SCORES.insert_one(new_entry)
         print(high_scores())
-        #SOCKETIO.emit('new-scores', high_scores(), namespace='/scores')
+        SOCKETIO.emit('new-scores', high_scores(), namespace='/scores')
         print("Emitted")
         return jsonify(entry={'success': True})
     else:
@@ -66,5 +66,4 @@ def acme_challenge(challenge_string):
         return "Doesn't match"
 
 if __name__ == '__main__':
-    APP.run(debug=True, host="0.0.0.0")
-    #SOCKETIO.run(APP, host="0.0.0.0", debug=True)
+    SOCKETIO.run(APP, host="0.0.0.0", debug=True)
