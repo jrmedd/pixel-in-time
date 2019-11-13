@@ -45,14 +45,10 @@
     <script src="{{url_for('static', filename='socket.io.min.js')}}"></script>
     <script>
         const scoreTables = { 'good-pocket': 'high_scores_pass', 'bad-pocket': 'high_scores_fail' };
-        let incomingScores = io.connect(location.origin + '/scores');
-        let sessionid
-        incomingScores.on('connect', function () {
-            sessionid = this.id;
-        });
-        let scores;
-        incomingScores.on('new-scores', (data) => {
-            let scores = data;
+        const getScore = async () => {
+            let scoreRequest = await fetch("http://127.0.0.1:5000/high_scores?json=1")
+            let scores = await scoreRequest.json();
+            console.log(scores);
             for (let classification in scoreTables) {
                 let scoreTableBody = document.getElementById(`${classification}-scores`);
                 scoreTableBody.innerHTML = "";
@@ -63,13 +59,14 @@
                     playerCell.textContent = v['username'];
                     let scoreCell = document.createElement('td');
                     scoreCell.classList.add('score');
-                    scoreCell.textContent = v['score'];
+                    scoreCell.textContent = `${v['score']}s`;
                     newScore.appendChild(playerCell);
                     newScore.appendChild(scoreCell);
                     scoreTableBody.appendChild(newScore)
                 });
             }
-        });
+        }
+        let thirtySecondCheck = setInterval(()=>{getScore()}, 30000);
     </script>
 </body>
 </html>
