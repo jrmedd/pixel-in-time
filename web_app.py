@@ -53,6 +53,10 @@ def high_scores(table=None):
             return {'high_scores_pass':high_scores_pass, 'high_scores_fail':high_scores_fail}
 
 
+@APP.route('/robo-judge')
+def robo_judge():
+    return render_template("roboJudge.html")
+
 @APP.route('/.well-known/acme-challenge/<challenge_string>')
 def acme_challenge(challenge_string):
     if challenge_string == LETS_ENCRYPT_CHALLENGE:

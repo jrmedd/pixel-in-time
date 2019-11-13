@@ -4,9 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Pocker Racer – Robo Judge</title>
 </head>
 <body>
-    
+    <div id="video-container">
+
+    </div>
+    <div id="judging-container">
+        <p id="judge-result">Train judge</p>
+    </div>
+    <div id="button-container">
+        <button id="good-pocket">Well-sewn pocket</button>
+        <button id="bad-pocket">Sub-standard pocket</button>
+        <button id="train-model">Train robo-judge</button>
+        <button id="save-model">Save knowledge</button>
+        <button id="load-model">Load knowledge</button>
+        <input id="load-file" type="file" style="display:none" />
+    </div>
+    <script src="{{ url_for('static', filename='p5.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='ml5.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='sketch.js') }}"></script>
+
 </body>
 </html>
