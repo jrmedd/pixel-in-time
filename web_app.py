@@ -19,6 +19,8 @@ CORS(APP)
 
 APP.secret_key = os.environ.get('SECRET_KEY')
 
+LETS_ENCRYPT_CHALLENGE = os.environ.get('LETS_ENCRYPT_CHALLENGE')
+LETS_ENCRYPT_RESPONSE = os.environ.get('LETS_ENCRYPT_RESPONSE')
 
 @APP.route('/')
 def index():
@@ -45,6 +47,13 @@ def high_scores():
             {'judge':False}, {'_id': 0}).sort('score', 1).limit(5))
         return render_template("highscore.html", high_scores_pass=high_scores_pass, high_scores_fail=high_scores_fail)
 
+
+@APP.route('/.well-known/acme-challenge/<challenge_string>')
+def acme_challenge(challenge_string):
+    if challenge_string == LETS_ENCRYPT_CHALLENGE:
+        return LETS_ENCRYPT_RESPONSE
+    else:
+        return "Doesn't match"
 
 if __name__ == '__main__':
     APP.run(debug=True, host="0.0.0.0")
