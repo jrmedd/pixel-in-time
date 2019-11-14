@@ -53,7 +53,7 @@
             for (let classification in scoreTables) {
                 let scoreTableBody = document.getElementById(`${classification}-scores`);
                 scoreTableBody.innerHTML = "";
-                scores[scoreTables[classification]].reverse().forEach(v => {
+                scores[scoreTables[classification]].forEach(v => {
                     let newScore = document.createElement('tr');
                     let playerCell = document.createElement('td');
                     playerCell.classList.add('player');
