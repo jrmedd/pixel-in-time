@@ -30,7 +30,7 @@ def entry():
     if key_check and key_check.get('valid'):
         new_entry = {'timestamp': datetime.datetime.now()}
         new_entry.update({'username':request.get_json().get('username')})
-        new_entry.update({'score' : request.get_json().get('score')})
+        new_entry.update({'score' : int(request.get_json().get('score'))})
         new_entry.update({'judge' : request.get_json().get('judgement')})
         SCORES.insert_one(new_entry)
         return jsonify(entry={'success': True})
