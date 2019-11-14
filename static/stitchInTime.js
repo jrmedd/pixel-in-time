@@ -119,6 +119,7 @@ document.onkeypress = (e) => {
             }
         }
         if (e.code == 'KeyN') { //finish judging
+            judgingMode = false;
             let scoreTable = '<h3>Scores</h3>';
             if (winner) {
                 scoreTable += `<h4>Winner: ${winner.playerLabel}</h4><ol>`;
