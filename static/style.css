@@ -112,3 +112,17 @@ button {
   color: white;
   font-family: Eleven;
 }
+
+.game-logo {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 16.5vh;
+}
+
+.game-version {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: .5rem;
+}

@@ -26,7 +26,7 @@
   btn.style.bottom = '0';
   btn.style.right = '0';
   btn.textContent = '🔇 Unmute';
-  btn.style.fontSize = '5em';
+  btn.style.fontSize = '2rem';
   btn.onclick = e => {
     list.forEach(ctx => ctx.resume());
     btn.remove();
