@@ -11,7 +11,7 @@ let winner;
 
 // game parameters
 
-const targetRotations = 90;
+const targetRotations = 110;
 const numberOfPlayers = 1;
 
 
