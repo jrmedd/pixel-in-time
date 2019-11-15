@@ -39,9 +39,9 @@ function draw() {
 // A function to be called when the model has been loaded
 let modelReady = () => {
   console.log("Model ready")
-  // classifier.load('./pocketModel/model.json', ()=> {
-  //   console.log("Model ready");
-  // });
+  classifier.load(pocketModel, ()=> {
+     console.log("Pocket model ready");
+  });
 }
 
 // Classify the current frame.
@@ -78,19 +78,25 @@ let setupButtons = () => {
   saveButton.addEventListener("click", () => {
     classifier.save();
   });
-
+  document.addEventListener('keypress', (e)=>{
+    if (e.keyCode == 99) {
+      classify();
+    }
+  })
+/*
   loadButton = document.getElementById('load-model');
   loadFile = document.getElementById('load-file');
   loadButton.addEventListener("click", () => {
     loadFile.click();
   });
-
+  
   loadFile.addEventListener("change", (e)=>{
     let selectedFile = e.target.files[0];
     classifier.load(selectedFile, () => {
      console.log('Custom Model Loaded!');
     });
   });
+  */
 }
 
 // Show the results
