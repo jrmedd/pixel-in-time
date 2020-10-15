@@ -3,11 +3,16 @@
   <head>
     <meta charset="utf-8">
     <title>Stitch In Time</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?2">
   </head>
   <body>
     <div id="gameArea">
-        <div id="gameStatus"></div>
+        <div id="gameStatus">
+        </div>
+    </div>
+    <div id="gameControlArea">
+        <button id="new-game">New game</button>
     </div>
     <script type="text/javascript" src="{{ url_for('static', filename='shims.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='domMods.js') }}"></script>
@@ -15,6 +20,6 @@
     <script type="text/javascript" src="{{ url_for('static', filename='audioFix.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='rotator.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='gameAudio.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='stitchInTime.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='stitchInTime.js') }}?2"></script>
   </body>
 </html>

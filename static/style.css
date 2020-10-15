@@ -10,13 +10,24 @@ body {
   margin: 0;
 }
 
-#gameArea {
+#gameArea,
+#gameControlArea {
   display: flex;
   justify-content: center;
   align-content: center;
   flex-wrap: wrap;
-  height: 100%;
-  height: 100vh;
+  height: 50%;
+  height: 50vh;
+}
+
+#button-wrapper {
+    min-height: 2rem;
+}
+
+#new-game { 
+    display: block;
+    opacity: 1;
+    transition: 0.3s ease;
 }
 
 #gameStatus {

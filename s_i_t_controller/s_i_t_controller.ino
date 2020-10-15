@@ -19,7 +19,7 @@ int p1MagnetPrevReading = 0;
 int p1TriggerState = 0;
 int p1TriggerPrevState = 0;
 
-int p1TriggerThreshold = 501;
+int p1TriggerThreshold = 520;
 
 int passCode = 80;
 int failCode = 70;
@@ -27,7 +27,6 @@ int newGameCode = 78;
 int p1Code = 48;
 
 void setup() {
-    //Serial.begin(9600);
     pinMode(passJudge, INPUT_PULLUP);
     pinMode(failJudge, INPUT_PULLUP);
     pinMode(newGame, INPUT_PULLUP);
@@ -42,7 +41,7 @@ void loop() {
     //Serial.println(p1MagnetReading);
     
     if (p1MagnetReading != p1MagnetPrevReading) {
-        if (p1MagnetReading < p1TriggerThreshold) {
+        if (p1MagnetReading > p1TriggerThreshold) {
             p1TriggerState = 1;
         }
         else {
@@ -62,12 +61,12 @@ void loop() {
     newGameState.update();
 
     if (passJudgeState.fell()) {
-        Keyboard.write(passCode);
+        //Keyboard.write(passCode);
     }
     if (failJudgeState.fell()) {
-        Keyboard.write(failCode);
+        //Keyboard.write(failCode);
     }
     if (newGameState.fell()) {
-        Keyboard.write(newGameCode);
+        //.Keyboard.write(newGameCode);
     }
 }
