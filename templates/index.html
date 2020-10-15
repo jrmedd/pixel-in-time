@@ -4,6 +4,14 @@
     <meta charset="utf-8">
     <title>Stitch In Time</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
+    <link rel="mask-icon" href="{{ url_for('static', filename='safari-pinned-tab.svg') }}" color="#5bbad5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#0d0d0d">
+    <meta name="msapplication-TileColor" content="#0d0d0d">
+    <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?2">
   </head>
   <body>
@@ -14,6 +22,7 @@
     <div id="gameControlArea">
         <button id="new-game">New game</button>
     </div>
+    <script type="text/javascript" src="{{ url_for('static', filename='swLoader.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='shims.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='domMods.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='countdown.js') }}"></script>

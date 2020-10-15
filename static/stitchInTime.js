@@ -108,7 +108,7 @@ document.onkeypress = (e) => {
             judgingMode = true; //start juding
             console.log("Going to judging mode");
             fadeText("gameStatus", `<p>${players[0].timeTaken}s</p>`);
-            postScore(username, players[0].timeTaken, true)
+            postScore(username, players[0].timeTaken, true);
             setTimeout(() => {
                         gameOver();
                         fadeText("gameStatus","<p></p>");
@@ -120,7 +120,7 @@ document.onkeypress = (e) => {
 }
 
 function postScore(username, score_entry, judgement) {
-    let url = "https://pocket-racer.xyz/entry"
+    let url = `${window.location.href}/entry`
     fetch(url, {
         method: "POST",
         mode: 'cors',
@@ -128,7 +128,6 @@ function postScore(username, score_entry, judgement) {
         credentials: "omit",
         headers: {
             "Content-Type": "application/json",
-            "X-Api-Key": scoreBoardKey
         },
         redirect: "follow",
         referrer: "no-referrer",

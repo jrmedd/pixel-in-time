@@ -1,7 +1,7 @@
 import os
 import datetime
 from pymongo import MongoClient
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, make_response, send_from_directory
 from flask_socketio import SocketIO
 
 APP = Flask(__name__)
@@ -52,6 +52,13 @@ def high_scores(table=None):
             pass_score_times = [score.pop('timestamp') for score in high_scores_pass]
             fail_score_times = [score.pop('timestamp') for score in high_scores_fail]
             return {'high_scores_pass':high_scores_pass, 'high_scores_fail':high_scores_fail}
+
+@APP.route('/sw.js')
+def sw():
+    response=make_response(
+                     send_from_directory('static',filename='sw.js'))
+    response.headers['Content-Type'] = 'application/javascript'
+    return response
 
 if __name__ == '__main__':
     SOCKETIO.run(APP, host="0.0.0.0", debug=True)
