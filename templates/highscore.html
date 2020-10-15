@@ -45,7 +45,7 @@
     <script src="{{url_for('static', filename='socket.io.min.js')}}"></script>
     <script>
         const scoreTables = { 'good-pocket': 'high_scores_pass', 'bad-pocket': 'high_scores_fail' };
-        let incomingScores = io.connect(location.origin + '/scores', ['websocket', 'polling']);
+        let incomingScores = io.connect(location.origin + '/scores', {transports:['websocket', 'polling']});
         let sessionid
         incomingScores.on('connect', function () {
             sessionid = this.id;
