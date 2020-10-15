@@ -1,5 +1,5 @@
 const newGameButton = document.getElementById("new-game");
-
+const username = promp("Tell us your nickname...")
 //game modes
 
 let gameActive = false;
@@ -108,6 +108,7 @@ document.onkeypress = (e) => {
             judgingMode = true; //start juding
             console.log("Going to judging mode");
             fadeText("gameStatus", `<p>${players[0].timeTaken}s</p>`);
+            postScore(username, players[0].timeTaken, true)
             setTimeout(() => {
                         gameOver();
                         fadeText("gameStatus","<p></p>");

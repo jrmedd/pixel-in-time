@@ -28,19 +28,15 @@ def index():
 
 @APP.route('/entry', methods=["POST"])
 def entry():
-    key_check = KEYS.find_one({'key': request.headers.get('X-Api-Key')})
-    if key_check and key_check.get('valid'):
-        new_entry = {'timestamp': datetime.datetime.now()}
-        new_entry.update({'username':request.get_json().get('username')})
-        new_entry.update({'score' : request.get_json().get('score')})
-        new_entry.update({'judge' : request.get_json().get('judgement')})
-        SCORES.insert_one(new_entry)
-        print(high_scores())
-        SOCKETIO.emit('new-scores', high_scores(), namespace='/scores')
-        print("Emitted")
-        return jsonify(entry={'success': True})
-    else:
-        return jsonify(entry={'success': False})
+    new_entry = {'timestamp': datetime.datetime.now()}
+    new_entry.update({'username':request.get_json().get('username')})
+    new_entry.update({'score' : request.get_json().get('score')})
+    new_entry.update({'judge' : request.get_json().get('judgement')})
+    SCORES.insert_one(new_entry)
+    print(high_scores())
+    SOCKETIO.emit('new-scores', high_scores(), namespace='/scores')
+    print("Emitted")
+    return jsonify(entry={'success': True})
 
 @APP.route('/high_scores')
 def high_scores(table=None):
@@ -56,14 +52,6 @@ def high_scores(table=None):
             pass_score_times = [score.pop('timestamp') for score in high_scores_pass]
             fail_score_times = [score.pop('timestamp') for score in high_scores_fail]
             return {'high_scores_pass':high_scores_pass, 'high_scores_fail':high_scores_fail}
-
-
-@APP.route('/.well-known/acme-challenge/<challenge_string>')
-def acme_challenge(challenge_string):
-    if challenge_string == LETS_ENCRYPT_CHALLENGE:
-        return LETS_ENCRYPT_RESPONSE
-    else:
-        return "Doesn't match"
 
 if __name__ == '__main__':
     SOCKETIO.run(APP, host="0.0.0.0", debug=True)
