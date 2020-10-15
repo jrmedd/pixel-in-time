@@ -1,5 +1,5 @@
 const newGameButton = document.getElementById("new-game");
-const username = promp("Tell us your nickname...")
+const username = prompt("Tell us your nickname...");
 //game modes
 
 let gameActive = false;
