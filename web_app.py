@@ -34,24 +34,26 @@ def entry():
     new_entry.update({'judge' : request.get_json().get('judgement')})
     SCORES.insert_one(new_entry)
     print(high_scores())
-    SOCKETIO.emit('new-scores', high_scores(), namespace='/scores')
+    SOCKETIO.emit('new-scores', high_scores(as_dict=True), namespace='/scores')
     print("Emitted")
     return jsonify(entry={'success': True})
 
 @APP.route('/high_scores')
-def high_scores(table=None):
-        high_scores_pass = list(SCORES.find(
-            {'judge':True}, {'_id': 0}).sort('score', 1).limit(5))
-        high_scores_fail = list(SCORES.find(
-            {'judge':False}, {'_id': 0}).sort('score', 1).limit(5))
-        if request.args.get('table'):
-            return render_template("highscore.html", high_scores_pass=high_scores_pass, high_scores_fail=high_scores_fail)
-        elif request.args.get('json'):
-            return jsonify(high_scores_pass=high_scores_pass, high_scores_fail=high_scores_fail)
-        else:
-            pass_score_times = [score.pop('timestamp') for score in high_scores_pass]
-            fail_score_times = [score.pop('timestamp') for score in high_scores_fail]
-            return {'high_scores_pass':high_scores_pass, 'high_scores_fail':high_scores_fail}
+def high_scores(as_dict=None):
+    print(request)
+    high_scores_pass = list(SCORES.find(
+        {'judge':True}, {'_id': 0}).sort('score', 1).limit(5))
+    high_scores_fail = list(SCORES.find(
+        {'judge':False}, {'_id': 0}).sort('score', 1).limit(5))
+    if request.args.get('json'):
+        return jsonify(high_scores_pass=high_scores_pass, high_scores_fail=high_scores_fail)
+    elif as_dict:
+        pass_score_times = [score.pop('timestamp') for score in high_scores_pass]
+        fail_score_times = [score.pop('timestamp') for score in high_scores_fail]
+        return {'high_scores_pass':high_scores_pass, 'high_scores_fail':high_scores_fail}
+    else:
+        return render_template("highscore.html", high_scores_pass=high_scores_pass, high_scores_fail=high_scores_fail)
+
 
 @APP.route('/sw.js')
 def sw():
