@@ -1,4 +1,4 @@
-let scoreBoardKey = prompt("What's the scoreboard key?")
+const newGameButton = document.getElementById("new-game");
 
 //game modes
 
@@ -48,7 +48,7 @@ const newGame = () => {
 
 const gameOver = () => {
     console.log('Game over. Press "N" to start a new game...');
-    fadeText("gameStatus", "<p>Game over. Press button to start...</p>");
+    //fadeText("gameStatus", "<p>Game over. Press button to start...</p>");
     players.map((player)=> player.reset()); //reset the internal rotation and time values of each player
     voices.map((voice)=>{ voice.carrier.frequency.value = voice.carrierFreq }); //set the voices back to their intitial carrier frequencies
     gameActive = false; //game is no longer active, don't 'listen' for rotations
@@ -56,27 +56,40 @@ const gameOver = () => {
     winner = null;
 }
 
-document.onkeypress = (e) => {
-    if (e.code == 'KeyN' && !gameActive && !countingDown) { //game not active, N key pressed
+newGameButton.addEventListener("transitionend", ()=>{
+    console.log(newGameButton.style.opacity);
+    if (newGameButton.style.opacity == 1) {
+        newGameButton.style.display = "block";
+    }
+    else {
+        newGameButton.style.display = "none";
+    }
+});
+
+newGameButton.addEventListener("click", () => {
+    newGameButton.style.opacity = 0;
+    if (!gameActive && !countingDown) { //game not active, N key pressed
         countingDown = true;
         introPip.simpleEnv(audioCtx.currentTime, 360, 10, 75);
         changeText("gameStatus", countdown.count);
-        counter = setInterval(()=>{
+        counter = setInterval(() => {
             done = countdown.tick();
             if (!done) {
                 changeText("gameStatus", countdown.count);
                 introPip.simpleEnv(audioCtx.currentTime, 360, 10, 75);
-            }
-            else {
+            } else {
                 clearInterval(counter);
                 countingDown = false;
                 countdown.reset();
                 introPip.simpleEnv(audioCtx.currentTime, 720, 10, 200);
                 newGame(); //start everything!
             }
-    
+
         }, 1000);
     }
+})
+
+document.onkeypress = (e) => {
     if (gameActive && !judgingMode) {
         let playerPressed = playerKeycodes.indexOf(e.code); //check if the key pressed is a plyer key
         if (playerPressed > -1) {
@@ -94,46 +107,13 @@ document.onkeypress = (e) => {
         if (players.every((player) => player.finished())) { // if every player has finished
             judgingMode = true; //start juding
             console.log("Going to judging mode");
-            fadeText("gameStatus", "<p>Judging...</p>");
-        }
-    }
-    if (gameActive && judgingMode) {
-        if (!players.every((player) => player.judged)) {
-            judgingPlayer = players.find((player) => !player.judged);
-            if (e.code == 'KeyP') {
-                judgingPlayer.opinion = true;
-            }
-            if (e.code == 'KeyF') {
-                judgingPlayer.opinion = false;
-            }
-            if (e.code == 'KeyP' || e.code == 'KeyF') {
-                appendText('gameStatus', '<p>X</p>');
-                judgingPlayer.judged = true;
-            }
-        }
-        else {
-            fadeText("gameStatus", "<p>The results are in...</p>");
-            let contenders = players.filter(player => player.opinion);
-            if (contenders.length > 0) {
-                winner = contenders.hasMin('timeTaken');
-            }
-        }
-        if (e.code == 'KeyN' && judgingMode) { //finish judging
-            let scoreTable = '<h3>Scores</h3>';
-            if (winner) {
-                scoreTable += `<h4>Winner: ${winner.playerLabel}</h4><ol>`;
-            }
-            let times = players.concat().sort((a, b)=> a.timeTaken - b.timeTaken);
-            times.forEach((player, index) => {
-                let username = prompt("Who got this score?")
-                postScore(username, player.timeTaken.toFixed(2), player.opinion)
-                scoreTable += `<li>${player.playerLabel} – ${player.timeTaken.toFixed(2)} seconds – ${player.opinion ? "Pass" : "Fail" }</li>`;
-            });
-            judgingMode = false;
-            scoreTable += '</ol>'
-            fadeText("gameStatus", scoreTable);
-            setTimeout(()=>gameOver(), 10000);
-            //gameOver(); //reset everything 
+            fadeText("gameStatus", `<p>${players[0].timeTaken}s</p>`);
+            setTimeout(() => {
+                        gameOver();
+                        fadeText("gameStatus","<p></p>");
+                        newGameButton.style.display = "block";
+                        newGameButton.style.opacity = 1;
+            },5000);
         }
     }
 }
