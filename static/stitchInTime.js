@@ -2,7 +2,7 @@ const newGameButton = document.getElementById("new-game");
 const storage = window.localStorage;
 let username = storage.getItem("username");
 if (!username) {
-    navigator.usb.requestDevice({ filters: [{ vendorId: 0x2886 }] }).then(device => {username = device.serialNumber; storage.setItem("username", username);});
+    setTimeout(()=>navigator.usb.requestDevice({ filters: [{ vendorId: 0x2886 }] }).then(device => {username = device.serialNumber; storage.setItem("username", username);}), 2000);
 }
 
 //game modes
