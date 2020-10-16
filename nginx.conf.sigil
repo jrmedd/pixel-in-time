@@ -39,7 +39,7 @@ server {
     proxy_buffering off;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "Upgrade";
-    proxy_pass http://{{ $.APP }}-{{ $upstream_port }}/socket.io;
+    proxy_pass http://socketio_nodes/socket.io;
   }
 
   include {{ $.DOKKU_ROOT }}/{{ $.APP }}/nginx.conf.d/*.conf;
@@ -133,7 +133,7 @@ server {
 
 {{ if $.DOKKU_APP_WEB_LISTENERS }}
 {{ range $upstream_port := $.PROXY_UPSTREAM_PORTS | split " " }}
-upstream {{ $.APP }}-{{ $upstream_port }} {
+upstream socketio_nodes {
 ip_hash;
 {{ range $listeners := $.DOKKU_APP_WEB_LISTENERS | split " " }}
 {{ $listener_list := $listeners | split ":" }}
