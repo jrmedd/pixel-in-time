@@ -1,33 +1,36 @@
 
 const newGameButton = document.getElementById("new-game");
-
-const getUSBSerial = (id) => {
-    let sn;
-    navigator.usb.requestDevice({ filters: [{ vendorId: id }] }).then(device => sn = device.serialNumber)
-    return sn;
-}
-
+const connectButton = document.getElementById("connect-usb");
+let deviceConnected = false;
 const storage = window.localStorage;
 let username = storage.getItem("username");
 
-const start = confirm("Welcome. Please connect your device now and click okay.");
+const getUSBSerial = (id) => {
+    navigator.usb
+      .requestDevice({ filters: [{ vendorId: id }] })
+      .then((device) => {
+        username = device.serialNumber;
+        storage.setItem('username', username);
+        deviceConnected = true;
+        newGameButton.style.display = "block";
+        connectButton.style.display = "none";
+      })
+      .catch(() => alert("Unable to detect device. Try reconnecting your device and trying again."));
+}
 
-if (start) {
+
+connectButton.addEventListener("click", ()=> {
     if (!username) {
-    username = getUSBSerial(0x2886);
-    storage.setItem("username", username);
+        getUSBSerial(0x2886);
     }
-}
-else {
-    location.reload();
-}
+    else {
+        deviceConnected = true;
+        newGameButton.style.display = "block";
+        connectButton.style.display = "none";
+    }
+});
 
-navigator.usb.onconnect = () => {
-    let newSn = getUSBSerial(0x2886);R0
-    if (newSn != storage.getItem('username')) {
-        storage.setItem('username', newSn);
-    }
-}
+
 //game modes
 
 let gameActive = false;

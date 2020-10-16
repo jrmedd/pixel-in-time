@@ -26,10 +26,12 @@ body {
 }
 
 #new-game { 
-    display: block;
+    display: none;
     opacity: 1;
     transition: 0.3s ease;
 }
+
+#connect-usb {}
 
 #gameStatus {
     text-align: center;
