@@ -5,18 +5,6 @@
 {{ $upstream_port := index $port_map_list 2 }}
 
 {{ if eq $scheme "http" }}
-
-{{ if $.DOKKU_APP_WEB_LISTENERS }}
-{{ range $upstream_port := $.PROXY_UPSTREAM_PORTS | split " " }}
-upstream socketio_nodes {
-ip_hash;
-{{ range $listeners := $.DOKKU_APP_WEB_LISTENERS | split " " }}
-{{ $listener_list := $listeners | split ":" }}
-{{ $listener_ip := index $listener_list 0 }}
-  server {{ $listener_ip }}:{{ $upstream_port }};{{ end }}
-}
-{{ end }}{{ end }}
-
 server {
   listen      [::]:{{ $listen_port }};
   listen      {{ $listen_port }};
@@ -46,12 +34,12 @@ server {
     proxy_set_header X-Request-Start $msec;
   }
   location /socket.io {
-    include proxy_params;
+  include proxy_params;
     proxy_http_version 1.1;
     proxy_buffering off;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "Upgrade";
-    proxy_pass http://socketio_nodes/socket.io;
+    proxy_pass http://{{ $.APP }}-{{ $upstream_port }}/socket.io;
   }
 
   include {{ $.DOKKU_ROOT }}/{{ $.APP }}/nginx.conf.d/*.conf;
@@ -92,6 +80,17 @@ server {
   keepalive_timeout   70;
   {{ if and (eq $.SPDY_SUPPORTED "true") (ne $.HTTP2_SUPPORTED "true") }}add_header          Alternate-Protocol  {{ $.PROXY_SSL_PORT }}:npn-spdy/2;{{ end }}
 
+  {{ if $.DOKKU_APP_WEB_LISTENERS }}
+{{ range $upstream_port := $.PROXY_UPSTREAM_PORTS | split " " }}
+upstream {{ $.APP }}-{{ $upstream_port }} {
+ip_hash;
+{{ range $listeners := $.DOKKU_APP_WEB_LISTENERS | split " " }}
+{{ $listener_list := $listeners | split ":" }}
+{{ $listener_ip := index $listener_list 0 }}
+  server {{ $listener_ip }}:{{ $upstream_port }};{{ end }}
+}
+{{ end }}{{ end }}
+
   location    / {
 
     gzip on;
@@ -111,7 +110,7 @@ server {
     proxy_set_header X-Forwarded-Port $server_port;
     proxy_set_header X-Request-Start $msec;
   }
-  location /socket.io/ {
+  location /socket.io {
   include proxy_params;
     proxy_http_version 1.1;
     proxy_buffering off;
