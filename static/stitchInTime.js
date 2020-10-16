@@ -8,10 +8,11 @@ const getUSBSerial = (id) => {
 const storage = window.localStorage;
 let username = storage.getItem("username");
 
-if (!username) {
+setTimeout(()=>{if (!username) {
     username = getUSBSerial(0x2886);
     storage.setItem('username', username);
-}
+}}, 1000);
+
 navigator.usb.onconnect = () => {
     let newSn = getUSBSerial(0x2886);
     if (newSn != storage.getItem('username')) {
