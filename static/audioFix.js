@@ -23,10 +23,11 @@
   const btn = document.createElement('button');
   btn.classList.add('unmute');
   btn.style.position = 'fixed';
-  btn.style.bottom = '0';
-  btn.style.right = '0';
-  btn.textContent = '🔇 Unmute';
-  btn.style.fontSize = '5em';
+  btn.style.transform="translate(-50%, 0)";
+  btn.style.bottom = '6.25%';
+  btn.style.left = '50%';
+  btn.textContent = "Audio on 🔈";
+  btn.style.fontSize = '2';
   btn.onclick = e => {
     list.forEach(ctx => ctx.resume());
     btn.remove();

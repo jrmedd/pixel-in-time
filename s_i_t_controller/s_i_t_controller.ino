@@ -35,6 +35,9 @@ void setup() {
   passJudgeState = Bounce(passJudge, 5);
   failJudgeState = Bounce(failJudge, 5);
   newGameState = Bounce(newGame, 5);
+  delay(1000);
+  Keyboard.write(82);
+  
 }
 void loop() {
   delay(5);

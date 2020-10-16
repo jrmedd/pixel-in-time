@@ -1,10 +1,23 @@
 const newGameButton = document.getElementById("new-game");
+
+const getUSBSerial = (id) => {
+    let sn;
+    navigator.usb.requestDevice({ filters: [{ vendorId: id }] }).then(device => sn = device.serialNumber)
+    return sn;
+}
 const storage = window.localStorage;
 let username = storage.getItem("username");
-if (!username) {
-    setTimeout(()=>navigator.usb.requestDevice({ filters: [{ vendorId: 0x2886 }] }).then(device => {username = device.serialNumber; storage.setItem("username", username);}), 2000);
-}
 
+if (!username) {
+    username = getUSBSerial(0x2886);
+    storage.setItem('username', username);
+}
+navigator.usb.onconnect = () => {
+    let newSn = getUSBSerial(0x2886);
+    if (newSn != storage.getItem('username')) {
+        storage.setItem('username', newSn);
+    }
+}
 //game modes
 
 let gameActive = false;
