@@ -27,46 +27,47 @@ int newGameCode = 78;
 int p1Code = 48;
 
 void setup() {
-    pinMode(passJudge, INPUT_PULLUP);
-    pinMode(failJudge, INPUT_PULLUP);
-    pinMode(newGame, INPUT_PULLUP);
+  Keyboard.begin();
+  pinMode(passJudge, INPUT_PULLUP);
+  pinMode(failJudge, INPUT_PULLUP);
+  pinMode(newGame, INPUT_PULLUP);
 
-    passJudgeState = Bounce(passJudge, 5);
-    failJudgeState = Bounce(failJudge, 5);
-    newGameState = Bounce(newGame, 5);
+  passJudgeState = Bounce(passJudge, 5);
+  failJudgeState = Bounce(failJudge, 5);
+  newGameState = Bounce(newGame, 5);
 }
 void loop() {
-    delay(5);
-    p1MagnetReading = analogRead(p1Magnet);
-    //Serial.println(p1MagnetReading);
-    
-    if (p1MagnetReading != p1MagnetPrevReading) {
-        if (p1MagnetReading > p1TriggerThreshold) {
-            p1TriggerState = 1;
-        }
-        else {
-            p1TriggerState = 0;
-        }
-    }
-    if (p1TriggerState != p1TriggerPrevState) {
-        if (p1TriggerState == 1) {
-        Keyboard.write(p1Code);
-        }
-    }
-    p1MagnetPrevReading = p1MagnetReading;
-    p1TriggerPrevState = p1TriggerState;
+  delay(5);
+  p1MagnetReading = analogRead(p1Magnet);
+  //Serial.println(p1MagnetReading);
 
-    passJudgeState.update();
-    failJudgeState.update();
-    newGameState.update();
+  if (p1MagnetReading != p1MagnetPrevReading) {
+    if (p1MagnetReading > p1TriggerThreshold) {
+      p1TriggerState = 1;
+    }
+    else {
+      p1TriggerState = 0;
+    }
+  }
+  if (p1TriggerState != p1TriggerPrevState) {
+    if (p1TriggerState == 1) {
+      Keyboard.write(p1Code);
+    }
+  }
+  p1MagnetPrevReading = p1MagnetReading;
+  p1TriggerPrevState = p1TriggerState;
 
-    if (passJudgeState.fell()) {
-        //Keyboard.write(passCode);
-    }
-    if (failJudgeState.fell()) {
-        //Keyboard.write(failCode);
-    }
-    if (newGameState.fell()) {
-        //.Keyboard.write(newGameCode);
-    }
+  passJudgeState.update();
+  failJudgeState.update();
+  newGameState.update();
+
+  if (passJudgeState.fell()) {
+    //Keyboard.write(passCode);
+  }
+  if (failJudgeState.fell()) {
+    //Keyboard.write(failCode);
+  }
+  if (newGameState.fell()) {
+    //.Keyboard.write(newGameCode);
+  }
 }

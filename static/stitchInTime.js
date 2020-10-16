@@ -1,5 +1,10 @@
 const newGameButton = document.getElementById("new-game");
-const username = prompt("Tell us your nickname...");
+const storage = window.localStorage;
+let username = storage.getItem("username");
+if (!username) {
+    navigator.usb.requestDevice({ filters: [{ vendorId: 0x2886 }] }).then(device => {username = device.serialNumber; storage.setItem("username", username);});
+}
+
 //game modes
 
 let gameActive = false;
