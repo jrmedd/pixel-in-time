@@ -5,6 +5,18 @@
 {{ $upstream_port := index $port_map_list 2 }}
 
 {{ if eq $scheme "http" }}
+
+{{ if $.DOKKU_APP_WEB_LISTENERS }}
+{{ range $upstream_port := $.PROXY_UPSTREAM_PORTS | split " " }}
+upstream socketio_nodes {
+ip_hash;
+{{ range $listeners := $.DOKKU_APP_WEB_LISTENERS | split " " }}
+{{ $listener_list := $listeners | split ":" }}
+{{ $listener_ip := index $listener_list 0 }}
+  server {{ $listener_ip }}:{{ $upstream_port }};{{ end }}
+}
+{{ end }}{{ end }}
+
 server {
   listen      [::]:{{ $listen_port }};
   listen      {{ $listen_port }};
@@ -34,7 +46,7 @@ server {
     proxy_set_header X-Request-Start $msec;
   }
   location /socket.io {
-  include proxy_params;
+    include proxy_params;
     proxy_http_version 1.1;
     proxy_buffering off;
     proxy_set_header Upgrade $http_upgrade;
@@ -127,17 +139,5 @@ server {
     root {{ $.DOKKU_LIB_ROOT }}/data/nginx-vhosts/dokku-errors;
     internal;
   }
-}
-{{ end }}{{ end }}
-
-
-{{ if $.DOKKU_APP_WEB_LISTENERS }}
-{{ range $upstream_port := $.PROXY_UPSTREAM_PORTS | split " " }}
-upstream socketio_nodes {
-ip_hash;
-{{ range $listeners := $.DOKKU_APP_WEB_LISTENERS | split " " }}
-{{ $listener_list := $listeners | split ":" }}
-{{ $listener_ip := index $listener_list 0 }}
-  server {{ $listener_ip }}:{{ $upstream_port }};{{ end }}
 }
 {{ end }}{{ end }}
