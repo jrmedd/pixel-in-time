@@ -1,3 +1,4 @@
+
 const newGameButton = document.getElementById("new-game");
 
 const getUSBSerial = (id) => {
@@ -5,16 +6,24 @@ const getUSBSerial = (id) => {
     navigator.usb.requestDevice({ filters: [{ vendorId: id }] }).then(device => sn = device.serialNumber)
     return sn;
 }
+
 const storage = window.localStorage;
 let username = storage.getItem("username");
 
-setTimeout(()=>{if (!username) {
+const start = confirm("Welcome. Please connect your device now and click okay.");
+
+if (start) {
+    if (!username) {
     username = getUSBSerial(0x2886);
-    storage.setItem('username', username);
-}}, 1000);
+    storage.setItem("username", username);
+    }
+}
+else {
+    location.reload();
+}
 
 navigator.usb.onconnect = () => {
-    let newSn = getUSBSerial(0x2886);
+    let newSn = getUSBSerial(0x2886);R0
     if (newSn != storage.getItem('username')) {
         storage.setItem('username', newSn);
     }
