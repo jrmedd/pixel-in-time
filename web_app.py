@@ -3,6 +3,8 @@ import datetime
 from pymongo import MongoClient
 from flask import Flask, jsonify, render_template, request, make_response, send_from_directory
 from flask_socketio import SocketIO
+import dateutil.parser
+import pytz
 
 APP = Flask(__name__)
 
@@ -31,28 +33,31 @@ def entry():
     new_entry = {'timestamp': datetime.datetime.now()}
     new_entry.update({'username':request.get_json().get('username')})
     new_entry.update({'score' : request.get_json().get('score')})
-    new_entry.update({'judge' : request.get_json().get('judgement')})
     SCORES.insert_one(new_entry)
-    print(high_scores())
-    SOCKETIO.emit('new-scores', high_scores(as_dict=True), namespace='/scores')
-    print("Emitted")
+    SOCKETIO.emit('new-scores', live_scores(as_dict=True), namespace='/scores')
     return jsonify(entry={'success': True})
 
-@APP.route('/high_scores')
-def high_scores(as_dict=None):
+@APP.route('/late-entry', methods=["POST"])
+def late_entry():
+    new_entries = request.get_json()
+    formatted_entries = [{'username': new_entries.get('username'), 'timestamp': dateutil.parser.parse(entry.get(
+        'timestamp')), 'score': entry.get('score')} for entry in new_entries.get('scores')]
+    SCORES.insert_many(formatted_entries)
+    SOCKETIO.emit('new-scores', live_scores(as_dict=True), namespace='/scores')
+    return jsonify(entry={'success': True})
+
+@APP.route('/live-scores')
+def live_scores(as_dict=None):
     print(request)
-    high_scores_pass = list(SCORES.find(
-        {'judge':True}, {'_id': 0}).sort('score', 1).limit(5))
-    high_scores_fail = list(SCORES.find(
-        {'judge':False}, {'_id': 0}).sort('score', 1).limit(5))
+    live_scores = list(SCORES.find(
+        {}, {'_id': 0}))
     if request.args.get('json'):
-        return jsonify(high_scores_pass=high_scores_pass, high_scores_fail=high_scores_fail)
+        return jsonify(live_scores=live_scores)
     elif as_dict:
-        pass_score_times = [score.pop('timestamp') for score in high_scores_pass]
-        fail_score_times = [score.pop('timestamp') for score in high_scores_fail]
-        return {'high_scores_pass':high_scores_pass, 'high_scores_fail':high_scores_fail}
+        score_timestamps = [score.pop('timestamp') for score in live_scores]
+        return {'live-scores':live_scores}
     else:
-        return render_template("highscore.html", high_scores_pass=high_scores_pass, high_scores_fail=high_scores_fail)
+        return render_template("livescore.html", live_scores=live_scores)
 
 
 @APP.route('/sw.js')

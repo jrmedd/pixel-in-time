@@ -139,7 +139,12 @@ document.onkeypress = (e) => {
             judgingMode = true; //start juding
             console.log("Going to judging mode");
             fadeText("gameStatus", `<p>${players[0].timeTaken}s</p>`);
-            postScore(username, players[0].timeTaken, true);
+            if (navigator.onLine) {
+                postScore(username, players[0].timeTaken);
+            }
+            else {
+                saveItForLater(players[0].timeTaken, new Date().toISOString())
+            }
             setTimeout(() => {
                         gameOver();
                         fadeText("gameStatus","<p></p>");
@@ -150,7 +155,19 @@ document.onkeypress = (e) => {
     }
 }
 
-function postScore(username, score_entry, judgement) {
+const saveItForLater = (score, timestamp)=> {
+    let currentScores = storage.getItem('scores');
+    let newScore = { score: score, timestamp: timestamp };
+    if (currentScores) {
+        storage.setItem('scores', JSON.stringify([...JSON.parse(currentScores), newScore]))
+    }
+    else {
+        storage.setItem('scores', JSON.stringify([newScore]))
+    }
+}
+
+
+function postScore(username, score_entry) {
     let url = `${window.location.href}/entry`
     fetch(url, {
         method: "POST",
@@ -165,7 +182,33 @@ function postScore(username, score_entry, judgement) {
         body: JSON.stringify({
             "username": username,
             "score": score_entry,
-            "judgement": judgement
         })
     });
 }
+
+const lateEntry = () => {
+  let savedScores = storage.getItem("scores");
+  if (savedScores && navigator.onLine) {
+    savedScores = JSON.stringify({'username': username, 'scores': JSON.parse(savedScores)})
+    let url = `${window.location.href}/late-entry`;
+    fetch(url, {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "omit",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow",
+      referrer: "no-referrer",
+      body: savedScores,
+    }).then((response) => {
+      if (response.status == 200) {
+        storage.removeItem("scores");
+      }
+    });
+  }
+};
+
+window.addEventListener('online', lateEntry)
+window.addEventListener('load', lateEntry)

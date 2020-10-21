@@ -8,15 +8,15 @@
     <title>Pocket Racer – High Scores </title>
 </head>
 <body>
-    <div id="good-pocket-wrapper" class="score-table-wrapper">
+    <div class="score-table-wrapper">
         <table>
-            <caption>Well-sewn pockets</caption>
+            <caption>Live times</caption>
             <thead>
                 <th class="player">Player</th>
                 <th class="score">Time</th>
             </thead>
-            <tbody id="good-pocket-scores">
-        {% for score in high_scores_pass %}
+            <tbody id="live-scores">
+        {% for score in live_scores %}
             <tr>
                 <td class="player">{{ score['username'] }}</td>
                 <td class="score">{{ score['score'] }}s</td>
@@ -25,26 +25,8 @@
         </tbody>
         </table>
     </div>
-    <div id="bad-pocket-wrapper" class="score-table-wrapper">
-        <table>
-            <caption>Sub-standard pockets</caption>
-            <thead>
-                <th class="player">Player</th>
-                <th class="score">Time</th>
-            </thead>
-            <tbody id="bad-pocket-scores">
-            {% for score in high_scores_fail %}
-            <tr>
-                <td class="player">{{ score['username'] }}</td>
-                <td class="score">{{ score['score'] }}s</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
     <script src="{{url_for('static', filename='socket.io.min.js')}}"></script>
     <script>
-        const scoreTables = { 'good-pocket': 'high_scores_pass', 'bad-pocket': 'high_scores_fail' };
         let incomingScores = io.connect(location.origin + '/scores');
         let sessionid
         incomingScores.on('connect', function () {
@@ -53,10 +35,9 @@
         let scores;
         incomingScores.on('new-scores', (data) => {
             let scores = data;
-            for (let classification in scoreTables) {
-                let scoreTableBody = document.getElementById(`${classification}-scores`);
-                scoreTableBody.innerHTML = "";
-                scores[scoreTables[classification]].forEach(v => {
+            let scoreTableBody = document.getElementById(`live-scores`);
+            scoreTableBody.innerHTML = "";
+            scores['live-scores'].forEach(v => {
                     let newScore = document.createElement('tr');
                     let playerCell = document.createElement('td');
                     playerCell.classList.add('player');
@@ -68,8 +49,7 @@
                     newScore.appendChild(scoreCell);
                     scoreTableBody.appendChild(newScore)
                 });
-            }
-        });
+            });
     </script>
 </body>
 </html>
