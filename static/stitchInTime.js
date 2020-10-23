@@ -233,6 +233,8 @@ function postScore(username, score_entry) {
       if (response.status != 200) {
         saveItForLater(score_entry, new Date().toISOString());
       }
+    }).catch(()=>{
+        saveItForLater(score_entry, new Date().toISOString());
     });
 }
 
