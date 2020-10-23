@@ -13,12 +13,21 @@ body {
 
 #gameArea,
 #gameControlArea {
+  visibility: hidden;
   display: flex;
   justify-content: center;
   align-content: center;
   flex-wrap: wrap;
   height: 50%;
   height: 50vh;
+}
+
+#install-message {
+  visibility: visible;
+}
+
+#start-measure, #stop-measure {
+  display: none;
 }
 
 #button-wrapper {
@@ -31,7 +40,9 @@ body {
     transition: 0.3s ease;
 }
 
-#connect-usb {}
+#connect-usb {
+  display: block;
+}
 
 #gameStatus {
     text-align: center;

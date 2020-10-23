@@ -1,9 +1,20 @@
-
+const gameArea = document.getElementById("gameArea");
+const gameControlArea = document.getElementById("gameControlArea");
 const newGameButton = document.getElementById("new-game");
 const connectButton = document.getElementById("connect-usb");
+const startMeasureButton = document.getElementById("start-measure");
+const stopMeasureButton = document.getElementById("stop-measure");
 let deviceConnected = false;
+let measureMode = false;
 const storage = window.localStorage;
 let username = storage.getItem("username");
+
+const isStandalone = new URL(location).searchParams.get('mode') == "standalone";
+
+if (isStandalone) {
+    gameArea.style.visibility = "visible";
+    gameControlArea.style.visibility = "visible";
+}
 
 const getUSBSerial = (id) => {
     navigator.usb
@@ -26,10 +37,27 @@ connectButton.addEventListener("click", ()=> {
     else {
         deviceConnected = true;
         newGameButton.style.display = "block";
+        startMeasureButton.style.display = "block";
         connectButton.style.display = "none";
     }
 });
 
+startMeasureButton.addEventListener("click", ()=>{
+    measureMode = confirm("Record a new task? This will clear the current task.")
+    targetRotations = measureMode ? 0 : targetRotations;
+    newGameButton.style.display = measureMode ? "none" : "block;"
+    startMeasureButton.style.display = measureMode ? "none" : "block";
+    stopMeasureButton.style.display = measureMode ? "block" : "none";
+})
+
+stopMeasureButton.addEventListener("click", ()=>{
+    measureMode = false;
+    newGameButton.style.display = "block";
+    startMeasureButton.style.display = "block";
+    stopMeasureButton.style.display = "none";
+    players[0].maxRotations = targetRotations;
+    gameOver();
+})
 
 //game modes
 
@@ -42,7 +70,7 @@ let winner;
 
 // game parameters
 
-const targetRotations = 100;
+let targetRotations = 100;
 const numberOfPlayers = 1;
 
 
@@ -75,6 +103,7 @@ const newGame = () => {
     players.map((player) => player.startedAt = gameStarted); //set the start times for every player
     gameActive = true; //start 'listening' to any rotations
     judgingMode = false; //ensure judging mode is off
+
 }
 
 const gameOver = () => {
@@ -85,6 +114,7 @@ const gameOver = () => {
     gameActive = false; //game is no longer active, don't 'listen' for rotations
     judgingMode = false; //leave juding mode
     winner = null;
+    startMeasureButton.style.display = "block";
 }
 
 newGameButton.addEventListener("transitionend", ()=>{
@@ -99,6 +129,8 @@ newGameButton.addEventListener("transitionend", ()=>{
 
 newGameButton.addEventListener("click", () => {
     newGameButton.style.opacity = 0;
+    stopMeasureButton.style.display = "none";
+    startMeasureButton.style.display = "none";
     if (!gameActive && !countingDown) { //game not active, N key pressed
         countingDown = true;
         introPip.simpleEnv(audioCtx.currentTime, 360, 10, 75);
@@ -151,6 +183,13 @@ document.onkeypress = (e) => {
                         newGameButton.style.display = "block";
                         newGameButton.style.opacity = 1;
             },5000);
+        }
+    }
+    if (measureMode) { 
+        let playerPressed = playerKeycodes.indexOf(e.code);
+        if (playerPressed > -1) {
+            targetRotations +=1;
+            voices[playerPressed].simpleEnv(audioCtx.currentTime, voices[playerPressed].carrier.frequency.value+=frequencyIncrease, 10, 50);
         }
     }
 }

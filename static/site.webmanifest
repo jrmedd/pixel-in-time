@@ -23,5 +23,5 @@
   ],
   "name": "Graft Games – Pocket Racer",
   "short_name": "Racer",
-  "start_url": "/"
+  "start_url": "/?mode=standalone"
 }

@@ -33,6 +33,6 @@
     btn.remove();
   };  
   document.addEventListener('DOMContentLoaded', _ => {
-    document.body.appendChild(btn);
+    document.getElementById("gameControlArea").appendChild(btn);
   }); 
 })();
