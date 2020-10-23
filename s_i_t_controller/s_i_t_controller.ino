@@ -6,7 +6,7 @@ int failJudge = 6;
 
 int newGame = 5;
 
-int p1Magnet = 0;
+int p1Magnet = 10;
 
 Bounce passJudgeState;
 Bounce failJudgeState;
