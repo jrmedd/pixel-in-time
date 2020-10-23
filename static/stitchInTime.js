@@ -55,7 +55,9 @@ stopMeasureButton.addEventListener("click", ()=>{
     newGameButton.style.display = "block";
     startMeasureButton.style.display = "block";
     stopMeasureButton.style.display = "none";
+    targetRotations = Math.floor(targetRotations*0.95);
     players[0].maxRotations = targetRotations;
+    storage.setItem('target', targetRotations)
     gameOver();
 })
 
@@ -70,7 +72,7 @@ let winner;
 
 // game parameters
 
-let targetRotations = 100;
+let targetRotations = parseInt(storage.getItem('target')) || 100;
 const numberOfPlayers = 1;
 
 
@@ -152,10 +154,14 @@ newGameButton.addEventListener("click", () => {
     }
 })
 
+let idleTimeout;
+
 document.onkeypress = (e) => {
     if (gameActive && !judgingMode) {
         let playerPressed = playerKeycodes.indexOf(e.code); //check if the key pressed is a plyer key
         if (playerPressed > -1) {
+            clearTimeout(idleTimeout);
+            idleTimeout = setTimeout(()=>gameOver(), 30000);
             let rotated = players[playerPressed].rotate(); //rotate if not at max
             if (rotated) { //play a sound if a rotation happened
                 voices[playerPressed].simpleEnv(audioCtx.currentTime, voices[playerPressed].carrier.frequency.value+=frequencyIncrease, 10, 50);
@@ -168,6 +174,7 @@ document.onkeypress = (e) => {
             }
         }
         if (players.every((player) => player.finished())) { // if every player has finished
+            clearTimeout(idleTimeout);
             judgingMode = true; //start juding
             console.log("Going to judging mode");
             fadeText("gameStatus", `<p>${players[0].timeTaken}s</p>`);
@@ -209,23 +216,23 @@ const saveItForLater = (score, timestamp)=> {
 function postScore(username, score_entry) {
     let url = `${location.origin}/entry`
     fetch(url, {
-        method: "POST",
-        mode: 'cors',
-        cache: "no-cache",
-        credentials: "omit",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        redirect: "follow",
-        referrer: "no-referrer",
-        body: JSON.stringify({
-            "username": username,
-            "score": score_entry,
-        }).then((response)=> {
-            if (response.status != 200) {
-                saveItForLater(score_entry, new Date().toISOString())      
-            }
-        })
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "omit",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow",
+      referrer: "no-referrer",
+      body: JSON.stringify({
+        username: username,
+        score: score_entry,
+      }),
+    }).then((response) => {
+      if (response.status != 200) {
+        saveItForLater(score_entry, new Date().toISOString());
+      }
     });
 }
 
