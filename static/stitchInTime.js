@@ -207,7 +207,7 @@ const saveItForLater = (score, timestamp)=> {
 
 
 function postScore(username, score_entry) {
-    let url = `${window.location.href}/entry`
+    let url = `${location.origin}/entry`
     fetch(url, {
         method: "POST",
         mode: 'cors',
@@ -221,6 +221,10 @@ function postScore(username, score_entry) {
         body: JSON.stringify({
             "username": username,
             "score": score_entry,
+        }).then((response)=> {
+            if (response.status != 200) {
+                saveItForLater(score_entry, new Date().toISOString())      
+            }
         })
     });
 }
@@ -229,7 +233,7 @@ const lateEntry = () => {
   let savedScores = storage.getItem("scores");
   if (savedScores && navigator.onLine) {
     savedScores = JSON.stringify({'username': username, 'scores': JSON.parse(savedScores)})
-    let url = `${window.location.href}/late-entry`;
+    let url = `${location.origin}/late-entry`;
     fetch(url, {
       method: "POST",
       mode: "cors",
