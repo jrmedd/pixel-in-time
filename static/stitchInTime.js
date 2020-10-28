@@ -9,7 +9,9 @@ let measureMode = false;
 const storage = window.localStorage;
 let username = storage.getItem("username");
 
-const isStandalone = new URL(location).searchParams.get('mode') == "standalone";
+const isStandalone =
+  new URL(location).searchParams.get("mode") == "standalone" ||
+  window.matchMedia("(display-mode: standalone)").matches;
 
 if (isStandalone) {
     gameArea.style.visibility = "visible";

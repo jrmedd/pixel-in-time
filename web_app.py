@@ -73,13 +73,13 @@ def late_entry():
 @APP.route('/live-scores')
 @login_required
 def live_scores(as_dict=None):
-    print(request)
     live_scores = list(SCORES.find(
-        {}, {'_id': 0}))
+        {}, {'_id': 0, 'timestamp': 0}))
+    print("AS DICT")
+    print(as_dict)
     if request.args.get('json'):
         return jsonify(live_scores=live_scores)
     elif as_dict:
-        score_timestamps = [score.pop('timestamp') for score in live_scores]
         return {'live-scores':live_scores}
     else:
         return render_template("livescore.html", live_scores=live_scores)
