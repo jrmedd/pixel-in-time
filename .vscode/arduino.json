@@ -1,6 +1,0 @@
-{
-    "programmer": "AVRISP mkII",
-    "board": "arduino:avr:leonardo",
-    "port": "/dev/cu.usbmodemHIDP1",
-    "sketch": "s_i_t_controller/s_i_t_controller.ino"
-}
