@@ -1,14 +1,15 @@
 import os
 import datetime
 from pymongo import MongoClient
-from flask import Flask, jsonify, render_template, request, session, redirect, make_response, url_for, send_from_directory
+from flask import Blueprint, Flask, jsonify, render_template, request, session, redirect, make_response, url_for, send_from_directory
 from flask_socketio import SocketIO
+from flask_cors import CORS
 import dateutil.parser
 from functools import wraps
 from passlib.hash import sha256_crypt
 
 APP = Flask(__name__)
-
+VISUALISATION = Blueprint('visualation', __name__, static_folder='./build', static_url_path='/')
 
 MONGO_URL = os.environ.get('MONGO_URL')
 
@@ -19,6 +20,7 @@ KEYS = DB['keys']
 LOGINS = DB['logins']
 
 APP = Flask(__name__)
+CORS(APP)
 SOCKETIO = SocketIO(APP)
 
 APP.secret_key = os.environ.get('SECRET_KEY')
@@ -34,6 +36,10 @@ def login_required(f):
             return redirect(url_for('login', next=request.path))
         return f(*args, **kwargs)
     return login_check
+
+@APP.route('/visualisation')
+def visualation():
+    return VISUALISATION.send_static_file('index.html')
 
 
 @APP.route('/login', methods=['GET', 'POST'])
@@ -75,8 +81,6 @@ def late_entry():
 def live_scores(as_dict=None):
     live_scores = list(SCORES.find(
         {}, {'_id': 0, 'timestamp': 0}))
-    print("AS DICT")
-    print(as_dict)
     if request.args.get('json'):
         return jsonify(live_scores=live_scores)
     elif as_dict:
@@ -84,6 +88,16 @@ def live_scores(as_dict=None):
     else:
         return render_template("livescore.html", live_scores=live_scores)
 
+@APP.route('/chart-data')
+def chart_data():
+    scores = list(SCORES.find({}))
+    players = set(entry.get('username') for entry in scores)
+    scores_by_player = {}
+    for player in players:
+        scores_by_player[player] = {'id':player, 'data':[]}
+    for score in scores:
+        scores_by_player[score.get('username')]['data'].append({'x':score.get('timestamp').strftime("%Y-%m-%d %H:%M:%S"), 'y':score.get('score')})
+    return jsonify(data=[scores_by_player.get(player) for player in scores_by_player.keys()])
 
 @APP.route('/sw.js')
 def sw():

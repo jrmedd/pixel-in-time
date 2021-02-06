@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/style.css"],"names":[],"mappings":"AAAA,cACI,WAAY,CACZ,WAAY,CACZ,aACJ","file":"main.842d8fa3.chunk.css","sourcesContent":[".chartWrapper {\n    width: 32rem;\n    height: 50vh;\n    max-width: 95%;\n}"]}

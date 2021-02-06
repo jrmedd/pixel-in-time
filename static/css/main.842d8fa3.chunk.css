@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap');
+
+body {
+    font-family: 'Open Sans',
+    sans-serif;
+    background-color: #2d2d2d;
+    color: #ffffff;
+}
+
+text {
+    fill: #ffffff !important;
+}
+.chartWrapper{width:64rem;height:75vh;max-width:95%}
+/*# sourceMappingURL=main.842d8fa3.chunk.css.map */
